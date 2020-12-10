@@ -1,0 +1,4 @@
+packages:
+- .
+resolver: nightly-2020-12-09
+compiler: ghc-8.10.2

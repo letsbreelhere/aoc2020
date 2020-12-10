@@ -1,0 +1,39 @@
+name:                advent-solutions
+version:             0.1.0.0
+github:              "letsbreelhere/advent2019"
+license:             BSD3
+author:              "Bree Elle Gardner"
+maintainer:          "letsbreelhere@gmail.com"
+copyright:           "2019 Bree Elle Gardner"
+
+description: "AoC 2019 solutions"
+
+dependencies:
+- base >= 4.7 && < 5
+- ansi-terminal
+- attoparsec
+- containers
+- lens
+- linear
+- mtl
+- ordered-containers
+- safe
+- split
+- text
+- vector
+
+library:
+  source-dirs: src
+
+default-extensions:
+  - OverloadedStrings
+  - GeneralizedNewtypeDeriving
+  - TemplateHaskell
+  - LambdaCase
+source-dirs: app
+
+executables:
+  1:
+    main:                1.hs
+    dependencies:
+    - advent-solutions
