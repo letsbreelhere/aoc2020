@@ -39,5 +39,12 @@ treesInPath input slope =
 
 main :: IO ()
 main = do
-  exInput <- lines <$> readFile "inputs/3.txt"
-  print (treesInPath exInput (V2 3 1))
+  input <- lines <$> readFile "inputs/3.txt"
+  print (treesInPath input (V2 3 1))
+  let slopes = [ V2 1 1
+               , V2 3 1
+               , V2 5 1
+               , V2 7 1
+               , V2 1 2
+               ]
+  print . product $ map (treesInPath input) slopes
