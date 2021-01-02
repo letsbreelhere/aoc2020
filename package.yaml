@@ -37,3 +37,7 @@ executables:
     main:                1.hs
     dependencies:
     - advent-solutions
+  2:
+    main:                2.hs
+    dependencies:
+    - advent-solutions
