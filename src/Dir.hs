@@ -57,3 +57,16 @@ vectorRep W = V2 (-1) 0
 
 moveDir :: Point -> Dir -> Point
 moveDir p d = p + vectorRep d
+
+origin :: Point
+origin = V2 0 0
+
+zipWithCoordinates :: [[a]] -> [[(a, Point)]]
+zipWithCoordinates = zipWithCoordinates' 0 []
+
+zipWithCoordinates' :: Int -> [[(a, Point)]] -> [[a]] -> [[(a, Point)]]
+zipWithCoordinates' _ acc [] = acc
+zipWithCoordinates' y acc (l:ls) =
+  let l' = zipWith (\a x -> (a, V2 x y)) l [0..]
+      acc' = acc ++ [l']
+   in zipWithCoordinates' (y+1) acc' ls
