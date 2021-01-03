@@ -49,3 +49,7 @@ executables:
     main:                4.hs
     dependencies:
     - advent-solutions
+  5:
+    main:                5.hs
+    dependencies:
+    - advent-solutions

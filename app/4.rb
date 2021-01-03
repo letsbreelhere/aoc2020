@@ -1,4 +1,4 @@
-require 'ostruct'
+require "ostruct"
 
 input = File.read(File.expand_path './inputs/4.txt')
 
