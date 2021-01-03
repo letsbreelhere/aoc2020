@@ -3,14 +3,11 @@ module Main where
 import Data.Bits
 import Data.List
 
-bitsOf :: String -> [Bool]
-bitsOf = map bit
-  where bit 'B' = True
-        bit 'R' = True
-        bit _ = False
-
 rowId :: String -> Int
-rowId = foldl' (\acc b -> acc `shiftL` 1 + (if b then 1 else 0)) 0 . bitsOf
+rowId = foldl' (\acc b -> acc `shiftL` 1 + b) 0 . map bit
+  where bit 'B' = 1
+        bit 'R' = 1
+        bit _ = 0
 
 main :: IO ()
 main = do
