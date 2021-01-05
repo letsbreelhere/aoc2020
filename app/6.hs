@@ -14,4 +14,4 @@ main = do
   print . sum . map (length . L.nub . filter (/= '\n')) $ input
 
   -- Part 2
-  print . sum . map (agreeCount . filter (not . null) . splitOn "\n") $ input
+  print . sum . map (agreeCount . filter (not . null) . lines) $ input
