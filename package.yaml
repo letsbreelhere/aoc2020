@@ -53,3 +53,7 @@ executables:
     main:                5.hs
     dependencies:
     - advent-solutions
+  6:
+    main:                6.hs
+    dependencies:
+    - advent-solutions
