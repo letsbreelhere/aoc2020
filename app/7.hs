@@ -47,4 +47,15 @@ main :: IO ()
 main = do
   input <- map ((\(Right x) -> x) . parseOnly parseBag . T.pack) . lines <$> readFile "inputs/7.txt"
   let graph = Map.fromList $ map (\(Bag c bs) -> (c, bs)) input
+
+  -- Part 1
   print . length . filter id . map (eventuallyGold graph) . filter (/= "shiny gold") $ Map.keys graph
+
+  -- Part 2
+  print $ subBagCount graph "shiny gold" - 1
+
+subBagCount :: Graph -> String -> Int
+subBagCount g s =
+  case Map.lookup s g of
+    Nothing -> 0
+    Just bs -> (1 +) . sum . map (\(cnt, clr) -> cnt * subBagCount g clr) $ bs
