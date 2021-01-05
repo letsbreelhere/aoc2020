@@ -1,25 +1,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Attoparsec.Text
-import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Control.Monad (replicateM)
 import Data.Functor (($>))
 import Control.Applicative ((<|>))
 
-data Bag = Bag String [(Int, String)]
-  deriving (Show)
+type Bag = (String, [(Int, String)])
 
 word = many1 letter
+color = unwords <$> replicateM 2 (word <* skipSpace)
 
 parseBag :: Parser Bag
 parseBag = do
-  color <- unwords <$> replicateM 2 (word <* skipSpace)
+  clr <- color
   string "bags contain "
   recur <- (string "no other bags." $> []) <|> subBags
-  pure (Bag color recur)
+  pure (clr, recur)
   where
     subBags = do
       bs <- sepBy1 rule (string ", ")
@@ -28,11 +28,11 @@ parseBag = do
     rule = do
       cnt <- decimal
       skipSpace
-      color <- unwords <$> replicateM 2 (word <* skipSpace)
+      clr <- color
       if cnt == 1
         then string "bag"
         else string "bags"
-      pure (cnt, color)
+      pure (cnt, clr)
 
 type Graph = Map String [(Int, String)]
 
@@ -45,11 +45,11 @@ eventuallyGold g s =
 
 main :: IO ()
 main = do
-  input <- map ((\(Right x) -> x) . parseOnly parseBag . T.pack) . lines <$> readFile "inputs/7.txt"
-  let graph = Map.fromList $ map (\(Bag c bs) -> (c, bs)) input
+  input <- map ((\(Right x) -> x) . parseOnly parseBag) . T.lines <$> T.readFile "inputs/7.txt"
+  let graph = Map.fromList input
 
   -- Part 1
-  print . length . filter id . map (eventuallyGold graph) . filter (/= "shiny gold") $ Map.keys graph
+  print . subtract 1 . length . filter (eventuallyGold graph) $ Map.keys graph
 
   -- Part 2
   print $ subBagCount graph "shiny gold" - 1
