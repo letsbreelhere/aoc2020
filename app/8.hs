@@ -2,14 +2,15 @@
 
 module Main where
 
-import Debug.Trace
-import Control.Lens ((%=), (.=), (+=), makeLenses, use)
+import Data.Maybe (catMaybes)
+import Data.List (find)
+import Control.Lens ((%=), (.=), (+=), (^.), makeLenses, use)
 import Control.Monad.State
 import Control.Applicative
 import Data.Functor
 import qualified Data.Set as Set
 import Data.Set (Set)
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text hiding (take)
 import qualified Data.Text.IO as T
 
 data Opcode = Nop
@@ -17,7 +18,7 @@ data Opcode = Nop
             | Jmp
             deriving (Show)
 
-data ConState = ConState { _instrs :: [(Opcode, Int)], _acc :: Int, _pc :: Int, _visited :: Set Int }
+data ConState = ConState { _instrs :: [(Opcode, Int)], _acc :: Int, _pc :: Int, _visited :: Set Int, _done :: Bool }
 makeLenses ''ConState
 
 newtype Con a = Con { unCon :: State ConState a }
@@ -27,7 +28,7 @@ runCon' :: Con a -> ConState -> (a, ConState)
 runCon' = runState . unCon
 
 runCon :: [(Opcode, Int)] -> Con a -> (a, ConState)
-runCon is c = runCon' c (ConState is 0 0 Set.empty)
+runCon is c = runCon' c (ConState is 0 0 Set.empty False)
 
 opcode :: Parser Opcode
 opcode =
@@ -56,8 +57,9 @@ step :: Con ()
 step = do
   is <- use instrs
   cur <- use pc
-  let (o, v) = is !! cur
-  step' o v
+  if cur == length is
+     then done .= True
+     else let (o, v) = is !! cur in step' o v
 
 step' :: Opcode -> Int -> Con ()
 step' Nop _ = advance
@@ -66,11 +68,29 @@ step' Jmp ix = markPc *> (pc += ix)
 
 runToLoop :: Con Int
 runToLoop = do
+  d <- use done
   cur <- use pc
   v <- use visited
-  if Set.member cur v
+  if d || Set.member cur v
      then use acc
      else step *> runToLoop
+
+terminates :: [(Opcode, Int)] -> Bool
+terminates ops =
+  let (_, res) = runCon ops runToLoop
+   in res ^. done
+
+zippers :: [a] -> [([a], a, [a])]
+zippers as =
+  let withIndex = as `zip` [0..]
+   in map (\(a, ix) -> (take ix as, a, drop (ix+1) as)) withIndex
+
+zipperMap :: ([a] -> a -> [a] -> b) -> [a] -> [b]
+zipperMap f = map (\(ls, a, rs) -> f ls a rs) . zippers
+
+trySwap ls (Nop, i) rs = Just (ls ++ [(Jmp, i)] ++ rs)
+trySwap ls (Jmp, i) rs = Just (ls ++ [(Nop, i)] ++ rs)
+trySwap _ _ _ = Nothing
 
 main :: IO ()
 main = do
@@ -78,3 +98,8 @@ main = do
 
   -- Part 1
   print . fst $ runCon input runToLoop
+
+  let swaps = catMaybes $ zipperMap trySwap input
+      Just soln = find terminates swaps
+
+  print . fst $ runCon soln runToLoop
