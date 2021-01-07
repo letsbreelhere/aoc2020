@@ -65,3 +65,7 @@ executables:
     main:                8.hs
     dependencies:
     - advent-solutions
+  9:
+    main:                9.hs
+    dependencies:
+    - advent-solutions
