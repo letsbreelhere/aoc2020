@@ -1,11 +1,23 @@
 module Main where
 
 import qualified Data.Set as S
-import Data.Set (Set)
+import Control.Applicative
 import Data.List
 
 isSumOf :: Int -> [Int] -> Bool
 isSumOf x ys = any (\y -> S.member (x - y) (S.fromList ys)) ys
+
+summingToFromStart :: [Int] -> Int -> Maybe [Int]
+summingToFromStart _ 0 = Just []
+summingToFromStart [] _ = Nothing
+summingToFromStart (x:xs) y
+  | x <= y = fmap (x :) (summingToFromStart xs (y - x))
+  | otherwise = Nothing
+
+summingTo :: [Int] -> Int -> Maybe [Int]
+summingTo _ 0 = Just []
+summingTo [] _ = Nothing
+summingTo xs y = summingToFromStart xs y <|> summingTo (tail xs) y
 
 slice :: Int -> Int -> [a] -> [a]
 slice start finish = take (finish - 1) . drop start
@@ -18,4 +30,8 @@ main = do
                     preceding = slice (ix - 25) (ix - 1) input
                 in not (cur `isSumOf` preceding)
 
-  print . fmap (input !!) $ find cond ixs
+  let Just invalid = (input !!) <$> find cond ixs
+  print invalid
+
+  let Just seq = summingTo input invalid
+  print $ minimum seq + maximum seq
