@@ -22,8 +22,7 @@ parseField =
   S.fromList .
     map snd .
       filter (\(c, _) -> c == '#') .
-        concat .
-          zipWithCoordinates
+        zipWithCoordinates
 
 modPoint :: Point -> Point -> Point
 modPoint (V2 x y) (V2 mx my) = V2 (mod x mx) (mod y my)

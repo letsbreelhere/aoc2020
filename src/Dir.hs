@@ -61,8 +61,8 @@ moveDir p d = p + vectorRep d
 origin :: Point
 origin = V2 0 0
 
-zipWithCoordinates :: [[a]] -> [[(a, Point)]]
-zipWithCoordinates = zipWithCoordinates' 0 []
+zipWithCoordinates :: [[a]] -> [(a, Point)]
+zipWithCoordinates = concat . zipWithCoordinates' 0 []
 
 zipWithCoordinates' :: Int -> [[(a, Point)]] -> [[a]] -> [[(a, Point)]]
 zipWithCoordinates' _ acc [] = acc
