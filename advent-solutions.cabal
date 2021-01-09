@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 40680681d9d4f525488816d494c8c3f09649535549e05bfb5376ea4652e9abfa
+-- hash: 798156db6d280b7f7f002a3ed879dcacd6253cf3780a2c59d1b2b3f827a32d7c
 
 name:           advent-solutions
 version:        0.1.0.0
@@ -96,6 +96,29 @@ executable 10
 
 executable 11
   main-is: 11.hs
+  other-modules:
+      Paths_advent_solutions
+  hs-source-dirs:
+      app
+  default-extensions: OverloadedStrings GeneralizedNewtypeDeriving TemplateHaskell LambdaCase
+  build-depends:
+      advent-solutions
+    , ansi-terminal
+    , attoparsec
+    , base >=4.7 && <5
+    , containers
+    , lens
+    , linear
+    , mtl
+    , ordered-containers
+    , safe
+    , split
+    , text
+    , vector
+  default-language: Haskell2010
+
+executable 12
+  main-is: 12.hs
   other-modules:
       Paths_advent_solutions
   hs-source-dirs:

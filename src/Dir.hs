@@ -9,12 +9,12 @@ data Dir
   | S
   | W
   | E
-  deriving (Show, Eq, Ord)
+  deriving (Show, Read, Eq, Ord)
 
 data Turn
   = L
   | R
-  deriving (Show, Eq, Ord)
+  deriving (Show, Read, Eq, Ord)
 
 oppose :: Dir -> Dir
 oppose N = S

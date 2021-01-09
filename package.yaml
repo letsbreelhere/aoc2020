@@ -77,3 +77,7 @@ executables:
     main:                11.hs
     dependencies:
     - advent-solutions
+  12:
+    main:                12.hs
+    dependencies:
+    - advent-solutions
