@@ -1,5 +1,8 @@
+{-# LANGUAGE TemplateHaskellQuotes #-}
+
 module Main where
 
+import Control.Lens
 import Data.Attoparsec.Text
 import qualified Data.Text.IO as T
 import Dir
@@ -37,8 +40,22 @@ applyAction (p, d) (Turning ts) = (p, foldr turnDir d ts)
 applyAction (p, d) (Move dir n) = (p + (vectorRep dir ^* n), d)
 applyAction (p, d) (Forward n) = (p + (vectorRep d ^* n), d)
 
+rotatePoint :: Point -> Turn -> Point
+rotatePoint (V2 x y) L = V2 (negate y) x
+rotatePoint (V2 x y) R = V2 y (negate x)
+
+data WayState = WayState { _way :: Point, _boat :: Point}
+makeLenses ''WayState
+
+applyActionWay :: WayState -> Action -> WayState
+applyActionWay ws (Turning ts) = way %~ (\p -> foldl' rotatePoint p ts) $ ws
+applyActionWay ws (Move dir n) = way +~ (vectorRep dir ^* n) $ ws
+applyActionWay ws (Forward n) = boat +~ ((ws ^. way) ^* n) $ ws
+
 main :: IO ()
 main = do
   Right input <- parseOnly parseFile <$> T.readFile "inputs/12.txt"
   let V2 x y = fst $ foldl' applyAction (V2 0 0, Dir.E) input
   print $ abs x + abs y
+  let V2 x' y' = view boat $ foldl' applyActionWay (WayState (V2 10 1) (V2 0 0)) input
+  print $ abs x' + abs y'
